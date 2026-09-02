@@ -1,3 +1,4 @@
+import { Show, SignIn } from "@clerk/nextjs";
 import CareerChat from "@/components/CareerChat";
 
 export default function Home() {
@@ -18,8 +19,29 @@ export default function Home() {
           durable backend AI agent sessions.
         </p>
 
-        {/* Embedded Chat UI directly on home page */}
-        <CareerChat />
+        {/* When signed in: Display the CareerChat Agent UI window */}
+        <Show when="signed-in">
+          <div className="w-full pt-2">
+            <CareerChat />
+          </div>
+        </Show>
+
+        {/* When signed out: Display Clerk Sign In first */}
+        <Show when="signed-out">
+          <div className="flex flex-col items-center justify-center py-6">
+            <div className="mb-6 text-center">
+              <h2 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200">
+                Sign in to consult your Career AI Advisor
+              </h2>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                Log in to start or resume your personalized, durable career session.
+              </p>
+            </div>
+            <div className="flex justify-center w-full">
+              <SignIn routing="hash" signUpUrl="/sign-up" />
+            </div>
+          </div>
+        </Show>
 
         {/* Feature Highlights */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 text-left">
