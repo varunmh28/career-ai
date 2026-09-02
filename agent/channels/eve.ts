@@ -1,6 +1,41 @@
+import { type AuthFn, localDev, vercelOidc, withAuthChallenges } from "eve/channels/auth";
 import { eveChannel } from "eve/channels/eve";
-import { localDev, none, vercelOidc } from "eve/channels/auth";
+import { createClerkClient } from "@clerk/backend";
+
+const clerkClient = createClerkClient({
+  secretKey: process.env.CLERK_SECRET_KEY,
+  publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+});
+
+export function clerkAuth(): AuthFn<Request> {
+  return withAuthChallenges(
+    async (request: Request) => {
+      try {
+        const requestState = await clerkClient.authenticateRequest(request);
+        if (!requestState.isSignedIn) {
+          return null;
+        }
+
+        const auth = requestState.toAuth();
+        return {
+          attributes: {
+            sessionId: auth.sessionId ?? "",
+          },
+          authenticator: "oidc",
+          issuer: "https://clerk.com",
+          principalId: auth.userId,
+          principalType: "user",
+          subject: auth.userId,
+        };
+      } catch (err) {
+        console.error("Clerk route auth error:", err);
+        return null;
+      }
+    },
+    [{ scheme: "Bearer" }]
+  );
+}
 
 export default eveChannel({
-  auth: [localDev(), none()],
+  auth: [clerkAuth(), vercelOidc(), localDev()],
 });
