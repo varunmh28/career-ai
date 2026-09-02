@@ -1,80 +1,67 @@
-import { Show, SignIn } from "@clerk/nextjs";
-import CareerChat from "@/components/CareerChat";
+"use client";
 
-export default function Home() {
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { LeftProfileRail } from "@/components/feed/LeftProfileRail";
+import { PostComposer } from "@/components/feed/PostComposer";
+import { PostCard } from "@/components/feed/PostCard";
+import { RightJobMatchesRail } from "@/components/feed/RightJobMatchesRail";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function FeedPage() {
+  const posts = useQuery(api.feed.getFeed, { limit: 30 });
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center px-4 py-8 md:py-12 bg-zinc-50 dark:bg-black font-sans">
-      <div className="max-w-4xl w-full text-center space-y-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs text-zinc-600 dark:text-zinc-400 shadow-2xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          Powered by Vercel Eve, Google Gemini & Clerk Auth
-        </div>
-
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
-          Supercharge your career with an autonomous AI advisor
-        </h1>
-
-        <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-          Real-time job market insights, resume review, and interview prep backed by
-          durable backend AI agent sessions.
-        </p>
-
-        {/* When signed in: Display the CareerChat Agent UI window */}
-        <Show when="signed-in">
-          <div className="w-full pt-2">
-            <CareerChat />
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        {/* Left Profile Rail (3 cols on md+) */}
+        <aside className="md:col-span-3">
+          <div className="sticky top-20">
+            <LeftProfileRail />
           </div>
-        </Show>
+        </aside>
 
-        {/* When signed out: Display Clerk Sign In first */}
-        <Show when="signed-out">
-          <div className="flex flex-col items-center justify-center py-6">
-            <div className="mb-6 text-center">
-              <h2 className="text-lg font-semibold text-zinc-800 dark:text-zinc-200">
-                Sign in to consult your Career AI Advisor
-              </h2>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                Log in to start or resume your personalized, durable career session.
-              </p>
-            </div>
-            <div className="flex justify-center w-full">
-              <SignIn routing="hash" signUpUrl="/sign-up" />
-            </div>
-          </div>
-        </Show>
+        {/* Center Feed Column (6 cols on md+) */}
+        <section className="md:col-span-6 space-y-4">
+          <PostComposer />
 
-        {/* Feature Highlights */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 text-left">
-          <div className="p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-2xs">
-            <div className="text-xl mb-1.5">📊</div>
-            <h3 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100 mb-1">
-              Live Market Insights
-            </h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-normal">
-              Autonomous tool calls query in-demand skills and trending focus areas.
-            </p>
+          {/* Posts Stream */}
+          <div className="space-y-4">
+            {posts === undefined ? (
+              // Loading Skeletons
+              [1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-5 space-y-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
+                    <div className="space-y-1.5 flex-1">
+                      <div className="h-4 w-32 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse" />
+                      <div className="h-3 w-48 bg-zinc-200 dark:bg-zinc-800 rounded animate-pulse" />
+                    </div>
+                  </div>
+                  <div className="h-16 w-full bg-zinc-200 dark:bg-zinc-800 rounded-lg animate-pulse" />
+                </div>
+              ))
+            ) : posts.length === 0 ? (
+              <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 text-zinc-500 text-sm">
+                No posts in the feed yet. Be the first to share an update!
+              </div>
+            ) : (
+              posts.map((post) => (
+                <PostCard key={post._id} post={post as any} />
+              ))
+            )}
           </div>
+        </section>
 
-          <div className="p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-2xs">
-            <div className="text-xl mb-1.5">⚡</div>
-            <h3 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100 mb-1">
-              Durable Streaming
-            </h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-normal">
-              Backed by Eve sessions that persist across reloads and stream responses.
-            </p>
+        {/* Right Job Matches Rail (3 cols on md+) */}
+        <aside className="md:col-span-3">
+          <div className="sticky top-20">
+            <RightJobMatchesRail />
           </div>
-
-          <div className="p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-2xs">
-            <div className="text-xl mb-1.5">🔒</div>
-            <h3 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100 mb-1">
-              Authenticated & Secure
-            </h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-normal">
-              Protected by Clerk session auth wired into the Eve channel route walk.
-            </p>
-          </div>
-        </div>
+        </aside>
       </div>
     </div>
   );

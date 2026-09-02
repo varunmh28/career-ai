@@ -8,13 +8,33 @@
  * @module
  */
 
+import type * as careerPlan from "../careerPlan.js";
+import type * as embeddings from "../embeddings.js";
+import type * as feed from "../feed.js";
+import type * as jobs from "../jobs.js";
+import type * as matches from "../matches.js";
+import type * as outreach from "../outreach.js";
+import type * as profiles from "../profiles.js";
+import type * as seed from "../seed.js";
+import type * as users from "../users.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
 
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  careerPlan: typeof careerPlan;
+  embeddings: typeof embeddings;
+  feed: typeof feed;
+  jobs: typeof jobs;
+  matches: typeof matches;
+  outreach: typeof outreach;
+  profiles: typeof profiles;
+  seed: typeof seed;
+  users: typeof users;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.

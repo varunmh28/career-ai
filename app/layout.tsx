@@ -1,13 +1,8 @@
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  Show,
-  UserButton,
-} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
+import { ConvexClientProvider } from "@/components/ConvexClientProvider";
+import { Navbar } from "@/components/Navbar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,56 +16,27 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Career AI",
-  description: "AI-powered career platform",
+  title: "CareerPrime — AI Career Agent & Professional Network",
+  description:
+    "LinkedIn-style professional network with a Vercel Eve & Convex AI Career Agent for vector job matching, profile optimization, and recruiter outreach.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-zinc-100/60 dark:bg-black text-zinc-900 dark:text-zinc-100 font-sans">
         <ClerkProvider>
-          <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black px-6 py-4">
-            <div className="max-w-7xl mx-auto flex items-center justify-between">
-              <div className="flex items-center gap-6">
-                <Link
-                  href="/"
-                  className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100"
-                >
-                  Career AI
-                </Link>
-                <nav className="flex items-center gap-4 text-sm font-medium">
-                  <Link
-                    href="/chat"
-                    className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition"
-                  >
-                    AI Advisor
-                  </Link>
-                </nav>
-              </div>
-              <div className="flex items-center gap-4">
-                <Show when="signed-out">
-                  <SignInButton mode="modal">
-                    <button className="text-sm font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100 cursor-pointer">
-                      Sign In
-                    </button>
-                  </SignInButton>
-                  <SignUpButton mode="modal">
-                    <button className="text-sm font-medium bg-black text-white dark:bg-white dark:text-black px-4 py-2 rounded-full hover:opacity-90 transition cursor-pointer">
-                      Sign Up
-                    </button>
-                  </SignUpButton>
-                </Show>
-                <Show when="signed-in">
-                  <UserButton />
-                </Show>
-              </div>
-            </div>
-          </header>
-          {children}
+          <ConvexClientProvider>
+            <Navbar />
+            <main className="flex-1 flex flex-col">{children}</main>
+          </ConvexClientProvider>
         </ClerkProvider>
       </body>
     </html>
