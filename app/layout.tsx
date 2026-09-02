@@ -35,12 +35,22 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ClerkProvider>
           <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black px-6 py-4">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
-              <Link
-                href="/"
-                className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100"
-              >
-                Career AI
-              </Link>
+              <div className="flex items-center gap-6">
+                <Link
+                  href="/"
+                  className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100"
+                >
+                  Career AI
+                </Link>
+                <nav className="flex items-center gap-4 text-sm font-medium">
+                  <Link
+                    href="/chat"
+                    className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition"
+                  >
+                    AI Advisor
+                  </Link>
+                </nav>
+              </div>
               <div className="flex items-center gap-4">
                 <Show when="signed-out">
                   <SignInButton mode="modal">
